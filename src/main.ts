@@ -12,7 +12,7 @@ const main = async () => {
     printError("This program only supports macOS.");
     return -1;
   }
-  print("Welcome to WinBoot!");
+  print("Welcome to Bootcraft!");
   
   const diskutilList: Disk[] = await diskUtil.listExternal();
   

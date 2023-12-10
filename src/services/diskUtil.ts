@@ -1,18 +1,5 @@
 import { exec } from "../utils/exec";
-
-type DiskPartition = {
-  partitionType: string;
-  name: string;
-  size: string;
-  identifier: string;
-};
-
-type Disk = {
-  device: string;
-  type: string;
-  partitions: DiskPartition[];
-};
-
+import type { Disk, DiskPartition } from "../types/diskUtil";
 
 class DiskUtil {
   private _parseDiskUtilList(diskInfo: string): Disk[] {

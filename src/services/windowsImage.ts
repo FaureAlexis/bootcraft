@@ -3,14 +3,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { printError } from '../utils/print';
 import { exec } from '../utils/exec';
-
-const homeDirsToIgnore = [
-  'Applications',
-  'Library',
-  'Pictures',
-  'node_modules',
-  'tmp',
-];
+import { config } from '../../config';
 
 class WindowsImage {
   private _mountPoint: string | null = null;
@@ -23,7 +16,7 @@ class WindowsImage {
         const files = fs.readdirSync(dir);
         
         // remove homeDirsToIgnore from files
-        homeDirsToIgnore.forEach((homeDirToIgnore: string) => {
+        config.pathsToIgnore.forEach((homeDirToIgnore: string) => {
           const index = files.indexOf(homeDirToIgnore);
           if (index > -1) {
             // console.log(`Removing ${homeDirToIgnore} from ${dir}`);

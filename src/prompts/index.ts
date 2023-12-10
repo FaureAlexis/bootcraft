@@ -34,7 +34,7 @@ export const getNewVolumeName = async (): Promise<string> => {
     type: 'text',
     name: 'volumeName',
     message: 'Enter a name for the new volume',
-    initial: 'WinBoot'
+    initial: 'Bootcraft'
   });
 
   return response.volumeName;
@@ -62,7 +62,7 @@ export const confirmInstallWimLib = async (): Promise<boolean> => {
   const response = await prompts({
     type: 'confirm',
     name: 'installWimLib',
-    message: 'WinBoot requires wimlib-imagex to flash Windows images. Would you like to install it now?'
+    message: 'Bootcraft requires wimlib-imagex to flash Windows images. Would you like to install it now?'
   });
 
   return response.installWimLib;
@@ -72,7 +72,7 @@ export const confirmInstallHomebrew = async (): Promise<boolean> => {
   const response = await prompts({
     type: 'confirm',
     name: 'installHomebrew',
-    message: 'WinBoot requires Homebrew to install wimlib-imagex. Would you like to install it now?'
+    message: 'Bootcraft requires Homebrew to install wimlib-imagex. Would you like to install it now?'
   });
 
   return response.installHomebrew;
