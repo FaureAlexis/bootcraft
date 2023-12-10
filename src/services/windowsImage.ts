@@ -1,15 +1,14 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-import { printError } from '../utils/print';
-import { exec } from '../utils/exec';
-import { config } from '../../config';
+import * as fs from "fs";
+import * as path from "path";
+import * as os from "os";
+import { printError } from "../utils/print";
+import { exec } from "../utils/exec";
+import { config } from "../../config";
 
 class WindowsImage {
   private _mountPoint: string | null = null;
   // return a list of iso files under ~ recursively except 
   public getIsoFiles(): string[] {
-    const isoFiles: string[] = [];
     const homeDir = os.homedir();
     const walkSync = (dir: string, filelist: string[] = []) => {
       try {
@@ -25,7 +24,7 @@ class WindowsImage {
         });
 
         // remove files or dirs starting with .
-        const dotFiles = files.filter((file: string) => file.startsWith('.'));
+        const dotFiles = files.filter((file: string) => file.startsWith("."));
         dotFiles.forEach((dotFile: string) => {
           const index = files.indexOf(dotFile);
           if (index > -1) {
@@ -40,15 +39,15 @@ class WindowsImage {
             const stat = fs.statSync(filePath);
             if (stat.isDirectory()) {
               filelist = walkSync(filePath, filelist);
-            } else if (stat.isFile() && file.endsWith('.iso')) {
+            } else if (stat.isFile() && file.endsWith(".iso")) {
               filelist.push(filePath);
             }
           } catch (error) {
-            printError(`Error reading ${filePath}: ${error}`)
+            printError(`Error reading ${filePath}: ${error}`);
           }
         });
       } catch (error) {
-        printError(`Error reading ${dir}: ${error}`)
+        printError(`Error reading ${dir}: ${error}`);
       }
       return filelist;
     };
@@ -57,19 +56,33 @@ class WindowsImage {
   }
 
   private _copyImageToDisk(imageFile: string, disk: string): Promise<string> {
-    return exec(`rsync -avh --progress --exclude=sources/install.wim ${imageFile}/* ${disk}`);
+    try {
+      return exec(`rsync -avh --progress --exclude=sources/install.wim ${imageFile}/* ${disk}`);
+    } catch (error) {
+      printError(`Error copying files to ${disk}: ${error}`);
+      return Promise.reject(error);
+    }
   }
   
   private async _unmountIso(): Promise<void> {
     if (this._mountPoint) {
-      await exec(`hdiutil unmount ${this._mountPoint}`);
+      try {
+        await exec(`hdiutil unmount ${this._mountPoint}`);
+      } catch (error) {
+        printError(`Error unmounting ${this._mountPoint}: ${error}`);
+      }
     }
   }
 
   private async _mountIso(isoFile: string): Promise<string> {
-    const mountPoint = await exec(`hdiutil mount ${isoFile}`);
-    this._mountPoint = mountPoint.split('\t')[0];
-    return mountPoint.trim();
+    try {
+      const mountPoint = await exec(`hdiutil mount ${isoFile}`);
+      this._mountPoint = mountPoint.split("\t")[0];
+      return mountPoint.trim();
+    } catch (error) {
+      printError(`Error mounting ${isoFile}: ${error}`);
+      return Promise.reject(error);
+    }
   }
 
 

@@ -1,6 +1,5 @@
 import diskUtil, { Disk } from "./services/diskUtil";
 import os from "os";
-import chalk from "chalk";
 import { selectUserDisk, confirmEraseDisk, getNewVolumeName, selectWindowsIso } from "./prompts";
 import windowsImage from "./services/windowsImage";
 import { print, printError, printWarning, printInfo } from "./utils/print";
@@ -15,7 +14,6 @@ const main = async () => {
   print("Welcome to Bootcraft!");
   
   const diskutilList: Disk[] = await diskUtil.listExternal();
-  
   
   if (!diskutilList.length) {
     printError("No external disks found.");
@@ -43,14 +41,14 @@ const main = async () => {
   }
 
   print(`Created ${newVolumeName} on ${userDisk.device}!`);
-  printInfo('Looking for Windows ISOs...');
+  printInfo("Looking for Windows ISOs...");
   
   const isoFiles = windowsImage.getIsoFiles();
   const selectedIsoFile = await selectWindowsIso(isoFiles);
   
   print(`Selected ${selectedIsoFile}!`);
   
-  printInfo('Flashing Windows ISO to disk...');
+  printInfo("Flashing Windows ISO to disk...");
   
   await windowsImage.flashImageToDisk(selectedIsoFile, `/Volumes/${newVolumeName}`);
   

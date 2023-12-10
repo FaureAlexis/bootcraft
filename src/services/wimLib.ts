@@ -5,7 +5,7 @@ import { print, printWarning, printInfo, printError } from "../utils/print";
 class WimLib {
   private async _checkHomebrew(): Promise<boolean> {
     try {
-      await exec('brew help');
+      await exec("brew help");
       return true;
     } catch (error) {
       return false;
@@ -13,21 +13,31 @@ class WimLib {
   }
 
   private async _installHomebrew(): Promise<boolean> {
-    await exec('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"');
-    return this._checkHomebrew();
+    try {
+      await exec("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"");
+      return this._checkHomebrew();
+    } catch (error) {
+      printError(`Error installing Homebrew: ${error}`);
+      return false;
+    }
   }
 
   private async _installWimLib(): Promise<boolean> {
     if (await this._checkHomebrew()) {
-      await exec('brew install wimlib');
-      return true;
+      try {
+        await exec("brew install wimlib");
+        return true;
+      } catch (error) {
+        printError(`Error installing wimlib-imagex: ${error}`);
+        return false;
+      }
     }
     return false;
   }
   
   private async _checkWimLib(): Promise<boolean> {
     try {
-      await exec('wimlib-imagex --help');
+      await exec("wimlib-imagex --help");
       return true;
     } catch (error) {
       return false;
@@ -35,35 +45,35 @@ class WimLib {
   }
 
   public async init(): Promise<boolean> {
-    printInfo('Checking for wimlib-imagex...');
+    printInfo("Checking for wimlib-imagex...");
     if (await this._checkWimLib()) {
-      print('Found wimlib-imagex!');
+      print("Found wimlib-imagex!");
       return true;
     } else {
-      printWarning('wimlib-imagex not found.');
+      printWarning("wimlib-imagex not found.");
       const installWimLib = await confirmInstallWimLib();
       if (installWimLib) {
-        printInfo('Checking for Homebrew...');
+        printInfo("Checking for Homebrew...");
         if (await this._checkHomebrew()) {
-          print('Found Homebrew!');
+          print("Found Homebrew!");
         } else {
-          printWarning('Homebrew not found.');
+          printWarning("Homebrew not found.");
           const installHomebrew = await confirmInstallHomebrew();
           if (installHomebrew) {
-            printInfo('Installing Homebrew...');
+            printInfo("Installing Homebrew...");
             await this._installHomebrew();
-            print('Installed Homebrew!');
+            print("Installed Homebrew!");
           } else {
-            printWarning('Aborting.');
+            printWarning("Aborting.");
             return false;
           }
         }
-        printInfo('Installing wimlib-imagex...');
+        printInfo("Installing wimlib-imagex...");
         await this._installWimLib();
-        print('Installed wimlib-imagex!');
+        print("Installed wimlib-imagex!");
         return true;
       } else {
-        printWarning('Aborting.');
+        printWarning("Aborting.");
         return false;
       }
     }
