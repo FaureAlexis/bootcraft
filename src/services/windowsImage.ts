@@ -7,7 +7,7 @@ import { config } from "../../config";
 
 class WindowsImage {
   private _mountPoint: string | null = null;
-  // return a list of iso files under ~ recursively except 
+
   public getIsoFiles(): string[] {
     const homeDir = os.homedir();
     const walkSync = (dir: string, filelist: string[] = []) => {
@@ -89,7 +89,7 @@ class WindowsImage {
   public async flashImageToDisk(imageFile: string, disk: string): Promise<string> {
     const mountPoint = await this._mountIso(imageFile);
     const result = await this._copyImageToDisk(mountPoint, disk);
-    await this._unmountIso();
+    // await this._unmountIso();
     return result;
   }
 
